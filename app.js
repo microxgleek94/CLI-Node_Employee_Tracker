@@ -40,10 +40,6 @@ async function loadUserPrompts() {
             value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
           },
           {
-            name: "View All Employees By Manager",
-            value: "VIEW_EMPLOYEES_BY_MANAGER"
-          },
-          {
             name: "Add an Employee",
             value: "ADD_EMPLOYEE"
           },
@@ -68,7 +64,7 @@ async function loadUserPrompts() {
             value: "ADD_ROLE"
           },
           {
-            name: "Remove Role from an Employee",
+            name: "Remove a Role from an Employee",
             value: "REMOVE_ROLE"
           },
           {
@@ -95,32 +91,28 @@ async function loadUserPrompts() {
   switch (choice) {
     case "VIEW_EMPLOYEES":
       return viewEmployees();
-    // case "VIEW_EMPLOYEES_BY_DEPARTMENT":
-    //   return viewEmployeesByDepartment();
-    // case "VIEW_EMPLOYEES_BY_MANAGER":
-    //   return viewEmployeesByManager();
-    // case "ADD_EMPLOYEE":
-    //   return addEmployee();
-    // case "REMOVE_EMPLOYEE":
-    //   return removeEmployee();
+    case "VIEW_EMPLOYEES_BY_DEPARTMENT":
+      return viewEmployeesByDepartment();
+    case "ADD_EMPLOYEE":
+      return addEmployee();
+    case "REMOVE_EMPLOYEE":
+      return removeEmployee();
     // case "UPDATE_EMPLOYEE_ROLE":
     //   return updateEmployeeRole();
-    // case "UPDATE_EMPLOYEE_MANAGER":
-    //   return updateEmployeeManager();
-    // case "VIEW_DEPARTMENTS":
-    //   return viewDepartments();
+    case "VIEW_DEPARTMENTS":
+      return viewDepartments();
     // case "ADD_DEPARTMENT":
     //   return addDepartment();
     // case "REMOVE_DEPARTMENT":
     //   return removeDepartment();
     // case "VIEW_ROLES":
     //   return viewRoles();
-    // case "ADD_ROLE":
-    //   return addRole();
+    case "ADD_ROLE":
+      return addRole();
     // case "REMOVE_ROLE":
     //   return removeRole();
-    // default:
-    //   return quit();
+    default:
+      return quit();
   }
 }
 
@@ -128,94 +120,68 @@ async function loadUserPrompts() {
 // or has been collected/entered by the user the results will be returned the user
 async function viewEmployees() {
   const employees = await dataQuery.findAllEmployees();
-
-  console.log("-------------");
-//   console.log(employees);
+  console.log("\n")
+  console.log("You are now looking at all the current employees");
+  console.log("-------------------------------------------------------\n");
   console.table(employees)
   loadUserPrompts();
 }
 
-// async function viewEmployeesByDepartment() {
-//   const departments = await db.findAllDepartments();
+async function viewEmployeesByDepartment() {
+  const departments = await dataQuery.findAllDepartments();
+    // filters through the department query to get 
+    // appropriate dept. name and id to display to the user
+  const departmentChoices = departments.map(({ id, name }) => ({
+    name: name,
+    value: id
+  }));
 
-//   const departmentChoices = departments.map(({ id, name }) => ({
-//     name: name,
-//     value: id
-//   }));
+  const { departmentId } = await prompt([
+    {
+      type: "list",
+      name: "departmentId",
+      message: "Which department would you like to see employees for?",
+      choices: departmentChoices
+    }
+  ]);
 
-//   const { departmentId } = await prompt([
-//     {
-//       type: "list",
-//       name: "departmentId",
-//       message: "Which department would you like to see employees for?",
-//       choices: departmentChoices
-//     }
-//   ]);
+  const employees = await dataQuery.findAllEmployeesByDepartment(departmentId);
+  console.log("\n")
+  console.log(`Below are the employees for your requested department:`);
+  console.log("-------------------------------------------------------\n");
+  console.table(employees);
 
-//   const employees = await db.findAllEmployeesByDepartment(departmentId);
+  loadUserPrompts();
+}
 
-//   console.log("\n");
-//   console.table(employees);
+async function removeEmployee() {
+  const employees = await dataQuery.findAllEmployees();
 
-//   loadUserPrompts();
-// }
+// filters through the employee table and displays the results to user
+  const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
+    name: `${first_name} ${last_name}`,
+    value: id
+  }));
 
-// async function viewEmployeesByManager() {
-//   const managers = await db.findAllEmployees();
+  const { employeeId } = await prompt([
+    {
+      type: "list",
+      name: "employeeId",
+      message: "Which employee do you want to remove?",
+      choices: employeeChoices
+    }
+  ]);
 
-//   const managerChoices = managers.map(({ id, first_name, last_name }) => ({
-//     name: `${first_name} ${last_name}`,
-//     value: id
-//   }));
+  await dataQuery.removeEmployee(employeeId);
+  console.log("\n")
+  console.log("Removed employee from the database");
+  console.log("-------------------------------------------------------\n");
 
-//   const { managerId } = await prompt([
-//     {
-//       type: "list",
-//       name: "managerId",
-//       message: "Which employee do you want to see direct reports for?",
-//       choices: managerChoices
-//     }
-//   ]);
-
-//   const employees = await db.findAllEmployeesByManager(managerId);
-
-//   console.log("\n");
-
-//   if (employees.length === 0) {
-//     console.log("The selected employee has no direct reports");
-//   } else {
-//     console.table(employees);
-//   }
-
-//   loadUserPrompts();
-// }
-
-// async function removeEmployee() {
-//   const employees = await db.findAllEmployees();
-
-//   const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
-//     name: `${first_name} ${last_name}`,
-//     value: id
-//   }));
-
-//   const { employeeId } = await prompt([
-//     {
-//       type: "list",
-//       name: "employeeId",
-//       message: "Which employee do you want to remove?",
-//       choices: employeeChoices
-//     }
-//   ]);
-
-//   await db.removeEmployee(employeeId);
-
-//   console.log("Removed employee from the database");
-
-//   loadUserPrompts();
-// }
+  loadUserPrompts();
+}
 
 // async function updateEmployeeRole() {
-//   const employees = await db.findAllEmployees();
+//   const employees = await dataQuery.findAllEmployees();
 
 //   const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
 //     name: `${first_name} ${last_name}`,
@@ -231,7 +197,7 @@ async function viewEmployees() {
 //     }
 //   ]);
 
-//   const roles = await db.findAllRoles();
+//   const roles = await dataQuery.findAllRoles();
 
 //   const roleChoices = roles.map(({ id, title }) => ({
 //     name: title,
@@ -247,56 +213,15 @@ async function viewEmployees() {
 //     }
 //   ]);
 
-//   await db.updateEmployeeRole(employeeId, roleId);
+//   await dataQuery.updateEmployeeRole(employeeId, roleId);
 
 //   console.log("Updated employee's role");
 
 //   loadUserPrompts();
 // }
 
-// async function updateEmployeeManager() {
-//   const employees = await db.findAllEmployees();
-
-//   const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
-//     name: `${first_name} ${last_name}`,
-//     value: id
-//   }));
-
-//   const { employeeId } = await prompt([
-//     {
-//       type: "list",
-//       name: "employeeId",
-//       message: "Which employee's manager do you want to update?",
-//       choices: employeeChoices
-//     }
-//   ]);
-
-//   const managers = await db.findAllPossibleManagers(employeeId);
-
-//   const managerChoices = managers.map(({ id, first_name, last_name }) => ({
-//     name: `${first_name} ${last_name}`,
-//     value: id
-//   }));
-
-//   const { managerId } = await prompt([
-//     {
-//       type: "list",
-//       name: "managerId",
-//       message:
-//         "Which employee do you want to set as manager for the selected employee?",
-//       choices: managerChoices
-//     }
-//   ]);
-
-//   await db.updateEmployeeManager(employeeId, managerId);
-
-//   console.log("Updated employee's manager");
-
-//   loadUserPrompts();
-// }
-
 // async function viewRoles() {
-//   const roles = await db.findAllRoles();
+//   const roles = await dataQuery.findAllRoles();
 
 //   console.log("\n");
 //   console.table(roles);
@@ -304,40 +229,40 @@ async function viewEmployees() {
 //   loadUserPrompts();
 // }
 
-// async function addRole() {
-//   const departments = await db.findAllDepartments();
+async function addRole() {
+  const departments = await dataQuery.findAllDepartments();
 
-//   const departmentChoices = departments.map(({ id, name }) => ({
-//     name: name,
-//     value: id
-//   }));
+  const departmentChoices = departments.map(({ id, name }) => ({
+    name: name,
+    value: id
+  }));
 
-//   const role = await prompt([
-//     {
-//       name: "title",
-//       message: "What is the name of the role?"
-//     },
-//     {
-//       name: "salary",
-//       message: "What is the salary of the role?"
-//     },
-//     {
-//       type: "list",
-//       name: "department_id",
-//       message: "Which department does the role belong to?",
-//       choices: departmentChoices
-//     }
-//   ]);
+  const role = await prompt([
+    {
+      name: "title",
+      message: "What is the name of the role?"
+    },
+    {
+      name: "salary",
+      message: "What is the salary of the role?"
+    },
+    {
+      type: "list",
+      name: "department_id",
+      message: "Which department does the role belong to?",
+      choices: departmentChoices
+    }
+  ]);
 
-//   await db.createRole(role);
+  await dataQuery.createRole(role);
 
-//   console.log(`Added ${role.title} to the database`);
+  console.log(`Added ${role.title} to the database`);
 
-//   loadUserPrompts();
-// }
+  loadUserPrompts();
+}
 
 // async function removeRole() {
-//   const roles = await db.findAllRoles();
+//   const roles = await dataQuery.findAllRoles();
 
 //   const roleChoices = roles.map(({ id, title }) => ({
 //     name: title,
@@ -354,21 +279,23 @@ async function viewEmployees() {
 //     }
 //   ]);
 
-//   await db.removeRole(roleId);
+//   await dataQuery.removeRole(roleId);
 
 //   console.log("Removed role from the database");
 
 //   loadUserPrompts();
 // }
 
-// async function viewDepartments() {
-//   const departments = await db.findAllDepartments();
+async function viewDepartments() {
+  const departments = await dataQuery.findAllDepartments();
 
-//   console.log("\n");
-//   console.table(departments);
+  console.log("\n");
+  console.log(`Below are the curent departments:`);
+  console.log("-------------------------------------------------------\n");
+  console.table(departments);
 
-//   loadUserPrompts();
-// }
+  loadUserPrompts();
+}
 
 // async function addDepartment() {
 //   const department = await prompt([
@@ -378,7 +305,7 @@ async function viewEmployees() {
 //     }
 //   ]);
 
-//   await db.createDepartment(department);
+//   await dataQuery.createDepartment(department);
 
 //   console.log(`Added ${department.name} to the database`);
 
@@ -386,7 +313,7 @@ async function viewEmployees() {
 // }
 
 // async function removeDepartment() {
-//   const departments = await db.findAllDepartments();
+//   const departments = await dataQuery.findAllDepartments();
 
 //   const departmentChoices = departments.map(({ id, name }) => ({
 //     name: name,
@@ -401,7 +328,7 @@ async function viewEmployees() {
 //     choices: departmentChoices
 //   });
 
-//   await db.removeDepartment(departmentId);
+//   await dataQuery.removeDepartment(departmentId);
 
 //   console.log(`Removed department from the database`);
 
@@ -409,8 +336,8 @@ async function viewEmployees() {
 // }
 
 // async function addEmployee() {
-//   const roles = await db.findAllRoles();
-//   const employees = await db.findAllEmployees();
+//   const roles = await dataQuery.findAllRoles();
+//   const employees = await dataQuery.findAllEmployees();
 
 //   const employee = await prompt([
 //     {
@@ -452,7 +379,7 @@ async function viewEmployees() {
 
 //   employee.manager_id = managerId;
 
-//   await db.createEmployee(employee);
+//   await dataQuery.createEmployee(employee);
 
 //   console.log(
 //     `Added ${employee.first_name} ${employee.last_name} to the database`
@@ -461,10 +388,10 @@ async function viewEmployees() {
 //   loadUserPrompts();
 // }
 
-// function quit() {
-//   console.log("Goodbye!");
-//   process.exit();
-// }
+function quit() {
+  console.log("Thanks for using the CLI Node Employee Tracker! See you next time.");
+  process.exit();
+}
 
 
 
