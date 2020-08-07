@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "asciiart-logo": "^0.2.6",
-    "dotenv": "^8.2.0",
-    "easy-table": "^1.1.1",
+    "console.table": "^0.10.0",
     "inquirer": "^7.0.0",
-    "mysql": "^2.17.1"
+    "mysql": "^2.17.1",
+    "path": "^0.12.7"
   },
   "keywords": [],
   "author": "",

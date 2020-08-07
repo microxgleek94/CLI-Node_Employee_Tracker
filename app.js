@@ -1,136 +1,139 @@
 // Dependencies
 const { prompt } = require("inquirer");
-const ezTable = require('easy-table'); // to display tables nicely in CLI/Terminal
+const cTable = require('console.table'); // to display tables nicely in CLI/Terminal
 const logo = require("asciiart-logo");
-const connection = require("./config/connection");
-// const dataQuery = require("./database/employee");
+const path = require("path")
+const connection = require("./database/config/connection.js");
+const dataQuery = require(path.resolve(__dirname, "./database/employee.js" ));
 
 
 
 //connect to mysql dbase
 connection.connect(function (err) {
     if (err) throw err;
-    console.log(`server is listening: ${connection.port}`)
+    console.log(`server connected to MySQL successfully`)
     start();
   });
 
-// Display logo text, load main prompts
+// Display logo text, load main prompts for user
 function start() {
   const logoText = logo({ name: "CLI Employee Tracker" }).render();
 
   console.log(logoText);
 
-  loadPrompts();
+  loadUserPrompts();
 }
 
-async function loadPrompts() {
+async function loadUserPrompts() {
   const { choice } = await prompt([
     {
-      type: "list",
-      name: "choice",
-      message: "What would you like to do?",
-      choices: [
-        {
-          name: "View All Employees",
-          value: "VIEW_EMPLOYEES"
-        },
-        {
-          name: "View All Employees By Department",
-          value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
-        },
-        {
-          name: "View All Employees By Manager",
-          value: "VIEW_EMPLOYEES_BY_MANAGER"
-        },
-        {
-          name: "Add Employee",
-          value: "ADD_EMPLOYEE"
-        },
-        {
-          name: "Remove Employee",
-          value: "REMOVE_EMPLOYEE"
-        },
-        {
-          name: "Update Employee Role",
-          value: "UPDATE_EMPLOYEE_ROLE"
-        },
-        {
-          name: "Update Employee Manager",
-          value: "UPDATE_EMPLOYEE_MANAGER"
-        },
-        {
-          name: "View All Roles",
-          value: "VIEW_ROLES"
-        },
-        {
-          name: "Add Role",
-          value: "ADD_ROLE"
-        },
-        {
-          name: "Remove Role",
-          value: "REMOVE_ROLE"
-        },
-        {
-          name: "View All Departments",
-          value: "VIEW_DEPARTMENTS"
-        },
-        {
-          name: "Add Department",
-          value: "ADD_DEPARTMENT"
-        },
-        {
-          name: "Remove Department",
-          value: "REMOVE_DEPARTMENT"
-        },
-        {
-          name: "Quit",
-          value: "QUIT"
-        }
-      ]
-    }
-  ]);
+        type: "list",
+        name: "choice",
+        message: "What would you like to do?",
+        choices: [
+          {
+            name: "View All Employees",
+            value: "VIEW_EMPLOYEES"
+          },
+          {
+            name: "View All Employees By Department",
+            value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
+          },
+          {
+            name: "View All Employees By Manager",
+            value: "VIEW_EMPLOYEES_BY_MANAGER"
+          },
+          {
+            name: "Add an Employee",
+            value: "ADD_EMPLOYEE"
+          },
+          {
+            name: "Remove an Employee",
+            value: "REMOVE_EMPLOYEE"
+          },
+          {
+            name: "Update an Employee's Role",
+            value: "UPDATE_EMPLOYEE_ROLE"
+          },
+          {
+            name: "Update an Employee's Manager",
+            value: "UPDATE_EMPLOYEE_MANAGER"
+          },
+          {
+            name: "View All Employee Roles",
+            value: "VIEW_ROLES"
+          },
+          {
+            name: "Add a Role to an Employee",
+            value: "ADD_ROLE"
+          },
+          {
+            name: "Remove Role from an Employee",
+            value: "REMOVE_ROLE"
+          },
+          {
+            name: "View All Departments",
+            value: "VIEW_DEPARTMENTS"
+          },
+          {
+            name: "Add a Department",
+            value: "ADD_DEPARTMENT"
+          },
+          {
+            name: "Remove a Department",
+            value: "REMOVE_DEPARTMENT"
+          },
+          {
+            name: "Quit the application?",
+            value: "QUIT"
+          }
+        ]
+      }
+    ]);
 
   // will call the correct function based on the user's choice
   switch (choice) {
     case "VIEW_EMPLOYEES":
       return viewEmployees();
-    case "VIEW_EMPLOYEES_BY_DEPARTMENT":
-      return viewEmployeesByDepartment();
-    case "VIEW_EMPLOYEES_BY_MANAGER":
-      return viewEmployeesByManager();
-    case "ADD_EMPLOYEE":
-      return addEmployee();
-    case "REMOVE_EMPLOYEE":
-      return removeEmployee();
-    case "UPDATE_EMPLOYEE_ROLE":
-      return updateEmployeeRole();
-    case "UPDATE_EMPLOYEE_MANAGER":
-      return updateEmployeeManager();
-    case "VIEW_DEPARTMENTS":
-      return viewDepartments();
-    case "ADD_DEPARTMENT":
-      return addDepartment();
-    case "REMOVE_DEPARTMENT":
-      return removeDepartment();
-    case "VIEW_ROLES":
-      return viewRoles();
-    case "ADD_ROLE":
-      return addRole();
-    case "REMOVE_ROLE":
-      return removeRole();
-    default:
-      return quit();
+    // case "VIEW_EMPLOYEES_BY_DEPARTMENT":
+    //   return viewEmployeesByDepartment();
+    // case "VIEW_EMPLOYEES_BY_MANAGER":
+    //   return viewEmployeesByManager();
+    // case "ADD_EMPLOYEE":
+    //   return addEmployee();
+    // case "REMOVE_EMPLOYEE":
+    //   return removeEmployee();
+    // case "UPDATE_EMPLOYEE_ROLE":
+    //   return updateEmployeeRole();
+    // case "UPDATE_EMPLOYEE_MANAGER":
+    //   return updateEmployeeManager();
+    // case "VIEW_DEPARTMENTS":
+    //   return viewDepartments();
+    // case "ADD_DEPARTMENT":
+    //   return addDepartment();
+    // case "REMOVE_DEPARTMENT":
+    //   return removeDepartment();
+    // case "VIEW_ROLES":
+    //   return viewRoles();
+    // case "ADD_ROLE":
+    //   return addRole();
+    // case "REMOVE_ROLE":
+    //   return removeRole();
+    // default:
+    //   return quit();
   }
 }
 
-// async function viewEmployees() {
-//   const employees = await db.findAllEmployees();
+// all async functions will wait till the user makes a choice, then once the information from is received by MySQL,
+// or has been collected/entered by the user the results will be returned the user
+async function viewEmployees() {
+  const employees = await dataQuery.findAllEmployees();
 
-//   console.log("\n");
-//   console.table(employees);
-
-//   loadMainPrompts();
-// }
+  console.log("-------------");
+//   console.log(employees);
+  console.table(employees)
+  loadUserPrompts();
+}
 
 // async function viewEmployeesByDepartment() {
 //   const departments = await db.findAllDepartments();
@@ -154,7 +157,7 @@ async function loadPrompts() {
 //   console.log("\n");
 //   console.table(employees);
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function viewEmployeesByManager() {
@@ -184,7 +187,7 @@ async function loadPrompts() {
 //     console.table(employees);
 //   }
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function removeEmployee() {
@@ -208,7 +211,7 @@ async function loadPrompts() {
 
 //   console.log("Removed employee from the database");
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function updateEmployeeRole() {
@@ -248,7 +251,7 @@ async function loadPrompts() {
 
 //   console.log("Updated employee's role");
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function updateEmployeeManager() {
@@ -289,7 +292,7 @@ async function loadPrompts() {
 
 //   console.log("Updated employee's manager");
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function viewRoles() {
@@ -298,7 +301,7 @@ async function loadPrompts() {
 //   console.log("\n");
 //   console.table(roles);
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function addRole() {
@@ -330,7 +333,7 @@ async function loadPrompts() {
 
 //   console.log(`Added ${role.title} to the database`);
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function removeRole() {
@@ -355,7 +358,7 @@ async function loadPrompts() {
 
 //   console.log("Removed role from the database");
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function viewDepartments() {
@@ -364,7 +367,7 @@ async function loadPrompts() {
 //   console.log("\n");
 //   console.table(departments);
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function addDepartment() {
@@ -379,7 +382,7 @@ async function loadPrompts() {
 
 //   console.log(`Added ${department.name} to the database`);
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function removeDepartment() {
@@ -402,7 +405,7 @@ async function loadPrompts() {
 
 //   console.log(`Removed department from the database`);
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // async function addEmployee() {
@@ -455,7 +458,7 @@ async function loadPrompts() {
 //     `Added ${employee.first_name} ${employee.last_name} to the database`
 //   );
 
-//   loadMainPrompts();
+//   loadUserPrompts();
 // }
 
 // function quit() {
