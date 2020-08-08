@@ -21,60 +21,63 @@ class dataQuery {
         return this.connection.query("INSERT INTO employee SET ?", employee);
     }
 
-    //Remove an employee with the given id
-      removeEmployee(employeeId) {
+    //Removes an employee by id
+    removeEmployee(employeeId) {
         return this.connection.query(
-          "DELETE FROM employee WHERE id = ?",
-          employeeId
+            "DELETE FROM employee WHERE id = ?",
+            employeeId
         );
-      }
+    }
 
-    //Update the given employee's role
-      updateEmployeeRole(employeeId, roleId) {
+    //Update the selected employee's role
+    updateEmployeeRole(employeeId, roleId) {
         return this.connection.query(
-          "UPDATE employee SET role_id = ? WHERE id = ?",
-          [roleId, employeeId]
+            "UPDATE employee SET role_id = ? WHERE id = ?",
+            [roleId, employeeId]
         );
-      }
+    }
 
-      // Find all roles, join with departments to display the department name
-      findAllRoles() {
+    // Find all roles, join with departments to display the department name
+    findAllRoles() {
         return this.connection.query(
-          "SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;"
+            "SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;"
         );
+    }
+
+    // Create a new role
+    createRole(role) {
+        return this.connection.query("INSERT INTO role SET ?", role);
+    }
+
+    // Remove a role fromt the datbase
+      removeRole(roleId) {
+        return this.connection.query("DELETE FROM role WHERE id = ?", roleId);
       }
-
-    //   // Create a new role
-    //   createRole(role) {
-    //     return this.connection.query("INSERT INTO role SET ?", role);
-    //   }
-
-    //   // Remove a role
-    //   removeRole(roleId) {
-    //     return this.connection.query("DELETE FROM role WHERE id = ?", roleId);
-    //   }
 
     // Find all departments
     // "GROUP BY department.id" is used to group all simliar data by the dept id
     findAllDepartments() {
         return this.connection.query(
+            // does not show new departments that have been created
             "SELECT department.id, department.name FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id GROUP BY department.id, department.name;"
-
         );
     }
 
-    //   // Create a new department
-    //   createDepartment(department) {
-    //     return this.connection.query("INSERT INTO department SET ?", department);
-    //   }
+    // Create a new department
+      createDepartment(department, err) {
+          if (err) {
+              throw err
+          }
+          else return this.connection.query("INSERT INTO department SET ?", department);
+      }
 
-    //   // Remove a department
-    //   removeDepartment(departmentId) {
-    //     return this.connection.query(
-    //       "DELETE FROM department WHERE id = ?",
-    //       departmentId
-    //     );
-    //   }
+    // Remove a department by its id
+      removeDepartment(departmentId) {
+        return this.connection.query(
+          "DELETE FROM department WHERE id = ?",
+          departmentId
+        );
+      }
 
     // Find all employees in a given department, join with roles to display role titles
     // using the forigen keys established in the schema, will attach roles with their corresponding departments

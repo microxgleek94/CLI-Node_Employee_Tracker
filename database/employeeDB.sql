@@ -18,7 +18,7 @@ CREATE TABLE role (
 --   https://www.mysqltutorial.org/mysql-foreign-key/
 -- to reference the id column in the department table
 -- use "ON DELETE CASCADE" so if a row from the parent table (department) is deleted or updated
--- the values of the matching rows in the child table (role) automatically deleted or updated.
+-- the values of the matching rows in the child table (role) automatically deleted or updated
   CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
 );
 
@@ -27,9 +27,10 @@ CREATE TABLE employee (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INT UNSIGNED NOT NULL,
+-- use "ON DELETE CASCADE" so if a row from the parent table (role) is deleted or updated
+-- the values of the matching rows in the child table (employee) automatically deleted or updated
   CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
   manager_id INT UNSIGNED,
-  CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
 
 INSERT INTO department
