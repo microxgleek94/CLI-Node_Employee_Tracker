@@ -20,4 +20,4 @@ A command-line application that also allows the user to:
   * Delete departments, roles, and employees
 
 # Installation
-Install dependencies on package.json including mysql, inquirer, dotenv, and console.table. The employee_db.sql file is a seed file to be run in mySQL workbench. Run node employeeDB.js to initialize the program.
+Install dependencies on package.json including mysql, inquirer, dotenv, and console.table. The employeeDB.sql file is a seed file to be run in mySQL workbench. Run node employee.js to initialize the program.
