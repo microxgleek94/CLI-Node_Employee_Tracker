@@ -1,6 +1,7 @@
 # CLI-Node_Employee_Tracker
 
 This CLI application runs in the user's terminal and uses a mySQL database to store a table filled with employee data. 
+![Employee Tracker](/Assets/employee-tracker.gif)
 
 ## Usage
   
