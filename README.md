@@ -21,3 +21,17 @@ A command-line application that also allows the user to:
 
 # Installation
 Install dependencies on package.json including mysql, inquirer, dotenv, and console.table. The employeeDB.sql file is a seed file to be run in mySQL workbench. Run node employee.js to initialize the program.
+
+ # Contact
+  
+![Badge](https://img.shields.io/badge/Github-microxgleek94-green) 
+  
+![Profile Image](https://github.com/microxgleek94.png?size=200)
+  
+**Contact email:** kiki_hanson@aol.com
+  
+**GitHub Username:**  https://github.com/microxgleek94
+  
+**Best form of contact:** Email
+  
+**GitHub Project link:** https://github.com/microxgleek94/CLI-Node_Employee_Tracker
